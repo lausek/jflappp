@@ -47,6 +47,8 @@ public class GrammarTable extends HighlightTable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final char LOGICAL_OR = '|';
 
 	/**
 	 * Instantiates a <CODE>GrammarTable</CODE> with an empty grammar.
@@ -150,7 +152,15 @@ public class GrammarTable extends HighlightTable {
 			if (p == null)
 				continue;
 			try {
-				grammar.addProduction(p);
+
+				if (p.getRHS().indexOf(LOGICAL_OR) != -1) {
+					for (String rhs : p.getRHS().split("\\" + LOGICAL_OR)) {
+						grammar.addProduction(new Production(p.getLHS(), rhs));
+					}
+				} else {
+					grammar.addProduction(p);
+				}
+
 				if (grammar.getStartVariable() == null)
 					grammar.setStartVariable(p.getLHS());
 			} catch (IllegalArgumentException e) {
